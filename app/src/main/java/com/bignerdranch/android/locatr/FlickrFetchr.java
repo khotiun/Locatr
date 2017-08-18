@@ -34,7 +34,7 @@ public class FlickrFetchr {
             .appendQueryParameter("api_key", API_KEY)
             .appendQueryParameter("format", "json")//формат получения данных
             .appendQueryParameter("nojsoncallback", "1")//исключить название метода и прочие скобки из возвращаемого ответа
-            .appendQueryParameter("extras", "url_s")
+            .appendQueryParameter("extras", "url_s,geo")
             .build();
     //Метод getUrlBytes(String) получает низкоуровневые данные по URL и возвращает их в виде массива байтов.
     public byte[] getUrlBytes(String urlSpec) throws IOException {
@@ -82,6 +82,7 @@ public class FlickrFetchr {
     //поиск картинок по тексту
     public List<GalleryItem> searchPhotos(Location location) {
         String url = buildUrl(location);
+        Log.d(TAG, "url " + url );
         return downloadGalleryItems(url);
     }
 
@@ -137,9 +138,11 @@ public class FlickrFetchr {
             if (!photoJsonObject.has("url_s")) {
                 continue;
             }
-
+            //извлечение полученных данных из JSON
             item.setUrl(photoJsonObject.getString("url_s"));
             item.setOwner(photoJsonObject.getString("owner"));
+            item.setLat(photoJsonObject.getDouble("latitude"));
+            item.setLon(photoJsonObject.getDouble("longitude"));
             items.add(item);
         }
     }
